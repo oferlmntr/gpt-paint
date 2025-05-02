@@ -1,0 +1,267 @@
+/* Base styles for the extension */
+.chatgpt-drawing-tool-button {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.chatgpt-drawing-tool-button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+.chatgpt-drawing-tool-button:focus {
+  outline: none;
+}
+
+.chatgpt-drawing-tool-button svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.chatgpt-drawing-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.chatgpt-drawing-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  width: 80vw;
+  height: 80vh;
+  max-width: 1600px;
+  max-height: 1000px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatgpt-drawing-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  cursor: move;
+}
+
+.chatgpt-drawing-panel-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.chatgpt-drawing-panel-close {
+  padding: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #6b7280;
+}
+
+.chatgpt-drawing-panel-close:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.chatgpt-drawing-panel-content {
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.chatgpt-drawing-canvas-container {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.chatgpt-drawing-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+/* Added styles for the toolbar */
+.chatgpt-drawing-panel-toolbar {
+  padding: 12px 16px;
+  background-color: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.chatgpt-drawing-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chatgpt-drawing-tool-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* Style for tool buttons - renamed selectors to avoid conflicts */
+.chatgpt-toolbar-button {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.chatgpt-toolbar-button:hover {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.chatgpt-toolbar-button.active {
+  background-color: #e0f2fe;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+/* Color picker */
+.chatgpt-color-picker {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  max-width: 220px;
+}
+
+.chatgpt-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chatgpt-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.chatgpt-color-swatch.active {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+/* Brush size selector */
+.chatgpt-brush-size-selector {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chatgpt-brush-size-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  cursor: pointer;
+}
+
+.chatgpt-brush-size-button:hover {
+  background-color: #f9fafb;
+}
+
+.chatgpt-brush-size-button.active {
+  background-color: #e0f2fe;
+  border-color: #93c5fd;
+}
+
+.chatgpt-brush-size-preview {
+  border-radius: 50%;
+  background-color: #000000;
+}
+
+/* Drawing action buttons */
+.chatgpt-drawing-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.chatgpt-drawing-action-button {
+  padding: 6px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: background-color 0.2s ease;
+}
+
+.chatgpt-drawing-action-button:hover {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.chatgpt-drawing-action-button.primary {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.chatgpt-drawing-action-button.primary:hover {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+/* Toast messages */
+.chatgpt-drawing-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 10001;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.chatgpt-drawing-toast.fade-out {
+  opacity: 0;
+} 
