@@ -49,6 +49,8 @@ import './extension.css';
       button.title = 'Open drawing tool';
       document.body.appendChild(button);
 
+
+      
       // Toggle panel when clicked
       button.addEventListener('click', () => {
         console.log('[ChatGPT Drawing Tool] Button clicked');
@@ -157,7 +159,7 @@ import './extension.css';
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 </button>
                 <button id="send-to-chat" class="chatgpt-drawing-action-button primary" title="Send to ChatGPT">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="none"><g transform="translate(0.000000,48.000000) scale(0.100000,-0.100000)" fill="currentColor"><path d="M149 370 c-23 -22 -45 -40 -49 -40 -4 0 -13 -14 -20 -31 -10 -24 -11 -38 -2 -63 7 -18 12 -45 12 -60 0 -35 41 -76 77 -76 15 0 37 -7 47 -15 35 -26 73 -18 117 25 23 22 45 40 49 40 4 0 13 14 20 31 10 24 11 38 2 63 -7 18 -12 45 -12 60 0 35 -41 76 -77 76 -15 0 -37 7 -47 15 -35 26 -73 18 -117 -25z m99 11 c10 -6 4 -14 -22 -29 -34 -20 -36 -24 -36 -72 0 -73 -24 -62 -28 13 -2 46 1 60 18 77 21 21 46 25 68 11z m102 -41 c18 -18 28 -50 16 -50 -3 0 -21 9 -40 21 l-35 20 -47 -27 c-41 -24 -46 -25 -42 -8 4 22 73 64 106 64 12 0 31 -9 42 -20z m-210 -64 c0 -39 3 -45 30 -56 38 -16 55 -36 37 -43 -21 -8 -97 41 -108 70 -7 19 -6 32 6 49 23 36 35 29 35 -20z m238 -40 c12 -23 11 -31 -2 -52 -24 -36 -36 -29 -36 21 0 25 -3 45 -7 45 -5 0 -23 9 -42 21 -27 16 -31 23 -20 29 19 13 90 -30 107 -64z m-117 34 c25 -14 24 -46 -1 -60 -43 -23 -84 35 -42 59 21 13 20 13 43 1z m57 -83 c2 -46 -1 -60 -18 -77 -21 -21 -46 -25 -68 -11 -10 6 -4 14 22 29 34 20 36 24 36 72 0 73 24 62 28 -13z m-47 -21 c-20 -24 -88 -49 -116 -42 -24 6 -55 50 -43 61 3 3 22 -4 41 -15 l36 -22 43 26 c41 24 62 20 39 -8z"></path></g></svg>
                 </button>
               </div>
             </div>
@@ -429,6 +431,15 @@ import './extension.css';
                     
                     chatInput.dispatchEvent(dropEvent);
                     showToast('Image sent to ChatGPT');
+                    
+                    // Close the drawing panel after sending to ChatGPT
+                    const panel = document.getElementById('chatgpt-drawing-panel');
+                    if (panel) {
+                      console.log('[ChatGPT Drawing Tool] Closing panel after sending to ChatGPT');
+                      panel.remove();
+                      // Reinject the floating button
+                      injectFloatingButton();
+                    }
                   } else {
                     showToast('ChatGPT input not found');
                   }

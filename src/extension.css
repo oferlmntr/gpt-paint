@@ -1,26 +1,26 @@
 /* Base styles for the extension */
 .chatgpt-drawing-tool-button {
   position: fixed;
-  bottom: 16px;
+  top: 80px;
   right: 16px;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: #3b82f6;
+  background-color: #2374e1;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   z-index: 9999;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
   outline: none;
 }
 
 .chatgpt-drawing-tool-button:hover {
-  background-color: #2563eb;
+  background-color: #1a65d6;
   transform: scale(1.05);
 }
 
