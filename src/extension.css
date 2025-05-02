@@ -1,12 +1,11 @@
 /* Base styles for the extension */
 .chatgpt-drawing-tool-button {
   position: fixed;
-  top: 80px;
+  top: 60px;
   right: 16px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #2374e1;
   color: white;
   display: flex;
   justify-content: center;
@@ -161,7 +160,7 @@
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
-  max-width: 220px;
+  max-width: 150px;
 }
 
 .chatgpt-color-swatch {
@@ -276,15 +275,31 @@
 /* Add styling for the drawing hint */
 .chatgpt-drawing-hint {
   position: absolute;
-  bottom: 2px;
+  bottom: 8px;
   left: 0;
   right: 0;
   text-align: center;
   font-size: 12px;
   color: #6b7280;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 4px;
   border-radius: 4px;
   pointer-events: none;
   opacity: 0.8;
   transition: opacity 0.2s ease;
+  margin-bottom: 10px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Add styling for the selection mode */
+.chatgpt-drawing-canvas.selection-mode {
+  cursor: crosshair;
+}
+
+.chatgpt-toolbar-button.active[id="selection-tool"] {
+  background-color: #cce4ff;
+  color: #0066ff;
+  border-color: #0066ff;
 } 

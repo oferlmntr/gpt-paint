@@ -114,7 +114,7 @@ import './extension.css';
           <div class="chatgpt-drawing-panel-content">
             <div class="chatgpt-drawing-canvas-container">
               <canvas id="drawing-canvas" class="chatgpt-drawing-canvas"></canvas>
-              <div class="chatgpt-drawing-hint">Tip: You can also paste images (Ctrl+V)</div>
+              <div class="chatgpt-drawing-hint" style="display: none;">Tip: You can paste images (Ctrl+V) or use the selection tool to move parts of your drawing</div>
             </div>
           </div>
           <div class="chatgpt-drawing-panel-toolbar">
@@ -125,6 +125,9 @@ import './extension.css';
                 </button>
                 <button id="eraser-tool" class="chatgpt-toolbar-button" title="Eraser">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+                </button>
+                <button id="selection-tool" class="chatgpt-toolbar-button" title="Selection (Cut: Ctrl+X, Copy: Ctrl+C, Paste: Ctrl+V, Delete: Del, Cancel: Esc)" style="display: none;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M20 2v20"/><path d="m8 9 3-3 3 3"/><path d="M11 6v12"/></svg>
                 </button>
                 <button id="upload-image" class="chatgpt-toolbar-button" title="Upload image">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
@@ -243,12 +246,36 @@ import './extension.css';
           resizeCanvas();
           window.addEventListener('resize', resizeCanvas);
           
+          // Show the tip briefly on startup
+          const drawingHint = document.querySelector('.chatgpt-drawing-hint') as HTMLElement;
+          if (drawingHint) {
+            drawingHint.style.display = 'block';
+            setTimeout(() => {
+              drawingHint.style.display = 'none';
+            }, 3000); // Hide after 5 seconds
+          }
+          
           // Drawing variables
           let isDrawing = false;
-          let drawMode = 'brush';
+          let drawMode = 'brush';  // Default mode is brush
           let currentColor = '#000000';
           let currentSize = 10;
           
+          // Selection variables
+          let isSelecting = false;
+          let isMovingSelection = false;
+          let selectionStart = { x: 0, y: 0 };
+          let selectionEnd = { x: 0, y: 0 };
+          let selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+          let selectionImageData: ImageData | null = null;
+          let selectionOffset = { x: 0, y: 0 };
+          let dragStart = { x: 0, y: 0 };
+          
+          // Create a temporary canvas for selection operations
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+
+          // Set up initial drawing state
           ctx.lineWidth = currentSize;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -256,52 +283,324 @@ import './extension.css';
           
           // Drawing functions
           canvas.addEventListener('mousedown', (e) => {
-            isDrawing = true;
+            // Prevent event from being handled twice
+            e.preventDefault();
+            
             const rect = canvas.getBoundingClientRect();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-            console.log('[ChatGPT Drawing Tool] Started drawing');
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            console.log(`[ChatGPT Drawing Tool] Mouse down, mode: ${drawMode}, at x:${x}, y:${y}`);
+            
+            if (drawMode === 'selection') {
+              // If we have an active selection and clicked inside it
+              if (selectionImageData && 
+                  x >= selectionRect.x && x <= selectionRect.x + selectionRect.width &&
+                  y >= selectionRect.y && y <= selectionRect.y + selectionRect.height) {
+                // Start moving the selection
+                isMovingSelection = true;
+                dragStart = { x, y };
+                selectionOffset = { 
+                  x: x - selectionRect.x, 
+                  y: y - selectionRect.y 
+                };
+                canvas.style.cursor = 'move';
+                console.log('[ChatGPT Drawing Tool] Moving existing selection');
+              } else {
+                // Start a new selection
+                isSelecting = true;
+                // Clear any previous selection
+                clearSelection();
+                selectionStart = { x, y };
+                selectionEnd = { x, y };
+                console.log('[ChatGPT Drawing Tool] Starting new selection', { isSelecting });
+              }
+            } else {
+              // Regular drawing behavior
+              isDrawing = true;
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+            }
           });
           
           canvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
             const rect = canvas.getBoundingClientRect();
-            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-            ctx.stroke();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (drawMode === 'selection') {
+              if (isSelecting) {
+                // Update selection rectangle
+                selectionEnd = { x, y };
+                drawSelectionRect();
+                
+                // Log selection rect dimensions for debugging
+                const width = Math.abs(selectionEnd.x - selectionStart.x);
+                const height = Math.abs(selectionEnd.y - selectionStart.y);
+                if (width > 10 || height > 10) {
+                  console.log(`[ChatGPT Drawing Tool] Drawing selection with width: ${width}, height: ${height}, isSelecting: ${isSelecting}`);
+                }
+              } else if (isMovingSelection && selectionImageData) {
+                // Move the selection
+                moveSelection(x, y);
+              } else if (selectionImageData && 
+                        x >= selectionRect.x && x <= selectionRect.x + selectionRect.width &&
+                        y >= selectionRect.y && y <= selectionRect.y + selectionRect.height) {
+                // Hovering over the selection
+                canvas.style.cursor = 'move';
+              } else {
+                canvas.style.cursor = 'crosshair';
+              }
+            } else if (isDrawing) {
+              // Regular drawing behavior
+              ctx.lineTo(x, y);
+              ctx.stroke();
+            }
           });
           
-          canvas.addEventListener('mouseup', () => {
-            if (isDrawing) {
-              console.log('[ChatGPT Drawing Tool] Finished drawing');
+          canvas.addEventListener('mouseup', (e) => {
+            console.log(`[ChatGPT Drawing Tool] Mouse up, drawMode: ${drawMode}, isSelecting: ${isSelecting}, isMovingSelection: ${isMovingSelection}`);
+            
+            if (drawMode === 'selection') {
+              if (isSelecting) {
+                // Finalize selection
+                isSelecting = false;
+                
+                // Calculate the selection rectangle (normalized)
+                const minX = Math.min(selectionStart.x, selectionEnd.x);
+                const minY = Math.min(selectionStart.y, selectionEnd.y);
+                const width = Math.abs(selectionEnd.x - selectionStart.x);
+                const height = Math.abs(selectionEnd.y - selectionStart.y);
+                
+                console.log(`[ChatGPT Drawing Tool] Finalizing selection: width=${width}, height=${height}`);
+                
+                // Only create a selection if it has some size
+                if (width > 3 && height > 3) {
+                  selectionRect = { x: minX, y: minY, width, height };
+                  
+                  // Save the selection image data
+                  selectionImageData = ctx.getImageData(minX, minY, width, height);
+                  console.log('[ChatGPT Drawing Tool] Selection created:', selectionRect);
+                  
+                  // Mark the selection area
+                  drawSelectionBorder();
+                } else {
+                  // Selection is too small, clear it
+                  console.log('[ChatGPT Drawing Tool] Selection too small, clearing');
+                  clearSelection();
+                }
+              } else if (isMovingSelection) {
+                // Finalize the move
+                isMovingSelection = false;
+                canvas.style.cursor = 'crosshair';
+                console.log('[ChatGPT Drawing Tool] Finalized moving selection');
+              }
+            } else if (isDrawing) {
+              // End drawing
               isDrawing = false;
             }
           });
           
           canvas.addEventListener('mouseleave', () => {
             if (isDrawing) {
-              console.log('[ChatGPT Drawing Tool] Mouse left canvas while drawing');
               isDrawing = false;
             }
+            if (isSelecting) {
+              isSelecting = false;
+            }
           });
-
+          
+          // Helper function to clear selection
+          const clearSelection = () => {
+            if (selectionImageData) {
+              // Redraw the image to remove selection rectangle
+              redrawCanvas();
+              selectionImageData = null;
+            }
+            
+            isSelecting = false;
+            isMovingSelection = false;
+            selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+            canvas.style.cursor = 'crosshair';
+          };
+          
+          // Helper function to redraw the canvas without selection markings
+          const redrawCanvas = () => {
+            // This is needed to redraw the canvas without the selection borders
+            const fullImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(fullImageData, 0, 0);
+          };
+          
+          // Helper function to draw selection rectangle while dragging
+          const drawSelectionRect = () => {
+            // Redraw to clear previous temp rectangle
+            redrawCanvas();
+            
+            // Calculate rectangle dimensions
+            const minX = Math.min(selectionStart.x, selectionEnd.x);
+            const minY = Math.min(selectionStart.y, selectionEnd.y);
+            const width = Math.abs(selectionEnd.x - selectionStart.x);
+            const height = Math.abs(selectionEnd.y - selectionStart.y);
+            
+            // Only draw if we have a meaningful selection size
+            if (width < 1 || height < 1) return;
+            
+            // Draw rectangle with a more visible style
+            ctx.save();
+            
+            // First draw a solid border
+            ctx.strokeStyle = '#0066ff';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            ctx.strokeRect(minX, minY, width, height);
+            
+            // Then overlay with a dotted pattern for better visibility
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(minX, minY, width, height);
+            
+            ctx.restore();
+          };
+          
+          // Helper function to draw selection border around final selection
+          const drawSelectionBorder = () => {
+            ctx.save();
+            
+            // First draw a solid border
+            ctx.strokeStyle = '#0066ff';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            ctx.strokeRect(
+              selectionRect.x, 
+              selectionRect.y, 
+              selectionRect.width, 
+              selectionRect.height
+            );
+            
+            // Then overlay with a dotted pattern for better visibility
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(
+              selectionRect.x, 
+              selectionRect.y, 
+              selectionRect.width, 
+              selectionRect.height
+            );
+            
+            // Draw handles at corners
+            const handleSize = 8;
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#0066ff';
+            ctx.setLineDash([]);
+            ctx.lineWidth = 1.5;
+            
+            // Draw 8 handles (corners and midpoints)
+            const handles = [
+              { x: selectionRect.x, y: selectionRect.y }, // top-left
+              { x: selectionRect.x + selectionRect.width / 2, y: selectionRect.y }, // top-middle
+              { x: selectionRect.x + selectionRect.width, y: selectionRect.y }, // top-right
+              { x: selectionRect.x, y: selectionRect.y + selectionRect.height / 2 }, // middle-left
+              { x: selectionRect.x + selectionRect.width, y: selectionRect.y + selectionRect.height / 2 }, // middle-right
+              { x: selectionRect.x, y: selectionRect.y + selectionRect.height }, // bottom-left
+              { x: selectionRect.x + selectionRect.width / 2, y: selectionRect.y + selectionRect.height }, // bottom-middle
+              { x: selectionRect.x + selectionRect.width, y: selectionRect.y + selectionRect.height } // bottom-right
+            ];
+            
+            handles.forEach(handle => {
+              ctx.fillRect(
+                handle.x - handleSize / 2, 
+                handle.y - handleSize / 2, 
+                handleSize, 
+                handleSize
+              );
+              ctx.strokeRect(
+                handle.x - handleSize / 2, 
+                handle.y - handleSize / 2, 
+                handleSize, 
+                handleSize
+              );
+            });
+            
+            ctx.restore();
+          };
+          
+          // Helper function to move the selection
+          const moveSelection = (x: number, y: number) => {
+            if (!selectionImageData) return;
+            
+            // Calculate new position
+            const newX = x - selectionOffset.x;
+            const newY = y - selectionOffset.y;
+            
+            // Redraw the canvas without the selection
+            redrawCanvas();
+            
+            // Draw the selection at the new position
+            ctx.putImageData(selectionImageData, newX, newY);
+            
+            // Update selection rectangle
+            selectionRect = { 
+              x: newX, 
+              y: newY, 
+              width: selectionRect.width, 
+              height: selectionRect.height 
+            };
+            
+            // Draw selection border
+            drawSelectionBorder();
+          };
+          
           // Toolbar functionality
           // 1. Drawing tools (brush and eraser)
           const brushTool = document.getElementById('brush-tool');
           const eraserTool = document.getElementById('eraser-tool');
+          const selectionTool = document.getElementById('selection-tool');
 
-          if (brushTool && eraserTool) {
+          if (brushTool && eraserTool && selectionTool) {
             brushTool.addEventListener('click', () => {
+              console.log('[ChatGPT Drawing Tool] Switching to brush mode');
               drawMode = 'brush';
               ctx.strokeStyle = currentColor;
+              canvas.style.cursor = 'crosshair';
+              
+              // Clear any active selection
+              clearSelection();
+              
+              // Update active state
               brushTool.classList.add('active');
               eraserTool.classList.remove('active');
+              selectionTool.classList.remove('active');
             });
 
             eraserTool.addEventListener('click', () => {
+              console.log('[ChatGPT Drawing Tool] Switching to eraser mode');
               drawMode = 'eraser';
               ctx.strokeStyle = '#ffffff'; // White for eraser
+              canvas.style.cursor = 'crosshair';
+              
+              // Clear any active selection
+              clearSelection();
+              
+              // Update active state
               eraserTool.classList.add('active');
               brushTool.classList.remove('active');
+              selectionTool.classList.remove('active');
+            });
+            
+            selectionTool.addEventListener('click', () => {
+              console.log('[ChatGPT Drawing Tool] Switching to selection mode');
+              drawMode = 'selection';
+              canvas.style.cursor = 'crosshair';
+              
+              // Update active state
+              selectionTool.classList.add('active');
+              brushTool.classList.remove('active');
+              eraserTool.classList.remove('active');
+              
+              // Show a toast message to help users understand how to use the selection tool
+              showToast('Click and drag to select an area');
             });
           }
 
@@ -309,13 +608,31 @@ import './extension.css';
           const colorSwatches = document.querySelectorAll('.chatgpt-color-swatch');
           colorSwatches.forEach(swatch => {
             swatch.addEventListener('click', () => {
-              if (drawMode === 'eraser') return;
+              // Switch to brush mode when clicking a color
+              if (drawMode !== 'brush') {
+                drawMode = 'brush';
+                
+                // Clear any active selection
+                clearSelection();
+                
+                // Update tool button states
+                if (brushTool && eraserTool && selectionTool) {
+                  brushTool.classList.add('active');
+                  eraserTool.classList.remove('active');
+                  selectionTool.classList.remove('active');
+                }
+                
+                // Update cursor
+                canvas.style.cursor = 'crosshair';
+                
+                console.log('[ChatGPT Drawing Tool] Switched to brush mode via color swatch');
+              }
               
               const color = (swatch as HTMLElement).dataset.color || '#000000';
               currentColor = color;
               ctx.strokeStyle = color;
               
-              // Update active state
+              // Update active state of color swatches
               colorSwatches.forEach(s => s.classList.remove('active'));
               swatch.classList.add('active');
             });
@@ -340,6 +657,7 @@ import './extension.css';
           const clearButton = document.getElementById('clear-canvas');
           if (clearButton) {
             clearButton.addEventListener('click', () => {
+              clearSelection();
               ctx.fillStyle = '#ffffff';
               ctx.fillRect(0, 0, canvas.width, canvas.height);
             });
@@ -593,6 +911,91 @@ import './extension.css';
               }
             });
           }
+
+          // Add keyboard event to handle cutting, copying, pasting
+          document.addEventListener('keydown', (e) => {
+            // Only handle when selection is active and panel is visible
+            const panel = document.getElementById('chatgpt-drawing-panel');
+            if (!panel || !selectionImageData) return;
+            
+            // Handle Escape to cancel selection
+            if (e.key === 'Escape') {
+              clearSelection();
+              return;
+            }
+            
+            // Check for Ctrl+X (cut), Ctrl+C (copy), Ctrl+V (paste), Delete
+            if (e.ctrlKey || e.metaKey) {
+              switch (e.key.toLowerCase()) {
+                case 'x': // Cut
+                  // Store selection in temp canvas
+                  tempCanvas.width = selectionRect.width;
+                  tempCanvas.height = selectionRect.height;
+                  tempCtx?.putImageData(selectionImageData, 0, 0);
+                  
+                  // Clear selection area on main canvas
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillRect(
+                    selectionRect.x, 
+                    selectionRect.y, 
+                    selectionRect.width, 
+                    selectionRect.height
+                  );
+                  
+                  clearSelection();
+                  e.preventDefault();
+                  break;
+                  
+                case 'c': // Copy
+                  // Store selection in temp canvas
+                  tempCanvas.width = selectionRect.width;
+                  tempCanvas.height = selectionRect.height;
+                  tempCtx?.putImageData(selectionImageData, 0, 0);
+                  e.preventDefault();
+                  break;
+                  
+                case 'v': // Paste at selection position (if available)
+                  if (tempCtx) {
+                    const imageData = tempCtx.getImageData(
+                      0, 0, tempCanvas.width, tempCanvas.height
+                    );
+                    
+                    // Paste at current selection position or center if no selection
+                    const x = selectionRect.x || (canvas.width - tempCanvas.width) / 2;
+                    const y = selectionRect.y || (canvas.height - tempCanvas.height) / 2;
+                    
+                    // Clear previous selection
+                    clearSelection();
+                    
+                    // Draw pasted image
+                    ctx.putImageData(imageData, x, y);
+                    
+                    // Create new selection for pasted content
+                    selectionRect = { 
+                      x, y, 
+                      width: tempCanvas.width, 
+                      height: tempCanvas.height 
+                    };
+                    selectionImageData = imageData;
+                    drawSelectionBorder();
+                  }
+                  e.preventDefault();
+                  break;
+              }
+            } else if (e.key === 'Delete') {
+              // Delete selection
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(
+                selectionRect.x, 
+                selectionRect.y, 
+                selectionRect.width, 
+                selectionRect.height
+              );
+              
+              clearSelection();
+              e.preventDefault();
+            }
+          });
         } else {
           console.error('[ChatGPT Drawing Tool] Failed to get canvas context');
         }
