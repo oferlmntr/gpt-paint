@@ -6,6 +6,10 @@
   
   🎨 Draw directly in ChatGPT conversations with this browser extension 🖌️
   
+  <a href="https://github.com/oferlmntr/gpt-paint/raw/main/screenshots/gpt-camel.mp4">
+    <img src="https://img.shields.io/badge/▶️-Watch%20Demo%20Video-blue?style=for-the-badge&logo=github" alt="Watch Demo Video" width="250"/>
+  </a>
+  
   [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
   [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-paint.svg)](https://github.com/oferlmntr/gpt-paint/issues)
@@ -14,12 +18,6 @@
   [Features](#features) • 
   [Contributing](./CONTRIBUTING.md) • 
   [Documentation](#usage)
-</div>
-
-<div align="center">
-  <a href="https://github.com/oferlmntr/gpt-paint/raw/main/screenshots/gpt-camel.mp4">
-    <img src="https://img.shields.io/badge/▶️-Watch%20Demo%20Video-blue?style=for-the-badge&logo=github" alt="Watch Demo Video" />
-  </a>
 </div>
 
 ## Features
