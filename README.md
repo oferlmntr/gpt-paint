@@ -1,8 +1,26 @@
-# GPT Paint
+<div align="center">
+  <!-- Note: Create a logo and place in screenshots/gpt-paint-logo.png -->
+  <img src="screenshots/gpt-paint-logo.png" alt="GPT Paint Logo" width="150" />
+  
+  # GPT Paint
+  
+  🎨 Draw directly in ChatGPT conversations with this browser extension 🖌️
+  
+  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+  [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-paint.svg)](https://github.com/oferlmntr/gpt-paint/issues)
+  
+  [Installation](#installation) • 
+  [Features](#features) • 
+  [Contributing](./CONTRIBUTING.md) • 
+  [Documentation](#usage)
+</div>
 
-A browser extension that adds a drawing tool to ChatGPT, allowing users to create and share drawings directly in chat conversations.
-
-![GPT Paint Screenshot](https://github.com/oferlmntr/gpt-paint/raw/main/screenshots/main-interface.png)
+<div align="center">
+  <a href="https://github.com/oferlmntr/gpt-paint/raw/main/screenshots/gpt-camel.mp4">
+    <img src="https://img.shields.io/badge/▶️-Watch%20Demo%20Video-blue?style=for-the-badge&logo=github" alt="Watch Demo Video" />
+  </a>
+</div>
 
 ## Features
 
