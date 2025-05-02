@@ -252,7 +252,7 @@ import './extension.css';
             drawingHint.style.display = 'block';
             setTimeout(() => {
               drawingHint.style.display = 'none';
-            }, 3000); // Hide after 5 seconds
+            }, 3000); // Hide after 3 seconds
           }
           
           // Drawing variables

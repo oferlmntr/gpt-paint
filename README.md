@@ -1,101 +1,115 @@
-# ChatGPT Drawing Tool Chrome Extension
+# GPT Paint
 
-A Chrome extension that adds a convenient drawing tool to ChatGPT, allowing you to create and share drawings directly in your conversations.
+A browser extension that adds a drawing tool to ChatGPT, allowing users to create and share drawings directly in chat conversations.
+
+![GPT Paint Screenshot](https://github.com/oferlmntr/gpt-paint/raw/main/screenshots/main-interface.png)
 
 ## Features
 
-- Floating paint-style drawing tool for ChatGPT
-- Brush and eraser tools with adjustable sizes
-- Color picker for custom colors
-- Image upload capability
-- Ability to paste images from clipboard
-- Copy drawings to clipboard
-- Send drawings directly to ChatGPT
-- Download drawings as PNG files
-- Resizable and draggable interface
+- Simple drawing interface with brush and eraser tools
+- Color selection with multiple preset colors
+- Adjustable brush sizes
+- Image upload and clipboard paste support
+- Selection tool for moving parts of your drawing
+- Easy sharing directly to ChatGPT conversations
+- Downloadable PNG exports
+- Copy to clipboard functionality
+- Draggable panel interface
 
-## Installation Instructions
+## Installation
 
-### Option 1: Install from Chrome Web Store
+### Chrome Web Store
+_Coming soon_
 
-*Coming soon*
-
-### Option 2: Install as an unpacked extension
+### Manual Installation
 
 1. Clone this repository:
-   ```
-   git clone https://github.com/yourusername/chatgpt-drawing-tool.git
-   cd chatgpt-drawing-tool
+   ```bash
+   git clone https://github.com/oferlmntr/gpt-paint.git
+   cd gpt-paint
    ```
 
 2. Install dependencies:
-   ```
+   ```bash
    npm install
    ```
 
 3. Build the extension:
+   ```bash
+   npm run build
    ```
-   npm run build:extension
-   ```
 
-4. Create icon files in the `dist/icons` directory:
-   - `icon16.png` (16x16)
-   - `icon48.png` (48x48)
-   - `icon128.png` (128x128)
-
-5. Open Chrome and navigate to `chrome://extensions/`
-
-6. Enable "Developer mode" using the toggle in the top-right corner
-
-7. Click "Load unpacked" and select the `dist` folder from this project
-
-8. The extension should now appear in your extensions list
+4. Load the extension in Chrome:
+   - Go to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the `dist` folder from this project
 
 ## Usage
 
-1. Navigate to [ChatGPT](https://chat.openai.com/)
+1. Navigate to ChatGPT (https://chat.openai.com)
+2. Click the brush icon that appears on the page
+3. Use the drawing tools to create your image
+4. When finished, click "Send to ChatGPT" to insert your drawing into the conversation
 
-2. Click the brush icon in the bottom-right corner of the page to open the drawing tool
+### Drawing Tools
 
-3. Alternatively, click the extension icon in the Chrome toolbar and click "Open Drawing Tool"
-
-4. Use the brush tool to draw, the eraser to remove parts of your drawing
-
-5. Adjust brush size and color as needed
-
-6. When finished, you can:
-   - Copy the drawing to your clipboard
-   - Download the drawing as a PNG
-   - Send the drawing directly to the ChatGPT conversation
+- **Brush Tool**: Draw freehand on the canvas
+- **Eraser Tool**: Remove parts of your drawing
+- **Upload**: Add images from your device
+- **Colors**: Choose from preset colors
+- **Brush Size**: Select different brush thicknesses
+- **Clear**: Reset the canvas
+- **Copy**: Copy the drawing to clipboard
+- **Download**: Save as PNG file
+- **Send**: Add the drawing to your ChatGPT conversation
 
 ## Development
 
-1. Clone this repository
-   ```
-   git clone https://github.com/yourusername/chatgpt-drawing-tool.git
-   cd chatgpt-drawing-tool
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+
+### Setup Development Environment
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/oferlmntr/gpt-paint.git
+   cd gpt-paint
    ```
 
 2. Install dependencies
-   ```
+   ```bash
    npm install
    ```
 
-3. Start the development server
-   ```
+3. Start development server
+   ```bash
    npm run dev
    ```
 
-4. For extension development, build and update the extension
+4. Build for production
+   ```bash
+   npm run build
    ```
-   npm run build:extension
-   ```
+
+## Contributing
+
+Contributions are welcome! Please check out our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+
+Before submitting a pull request, please make sure your changes follow our coding standards and have been tested thoroughly.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## Acknowledgements
 
-- Icons provided by [Lucide](https://lucide.dev/)
-- Built with React, TypeScript, and Vite 
+- Built with TypeScript and modern browser APIs
+- Icons from various open source icon libraries
+- Special thanks to all contributors
+
+---
+
+Made with ❤️ by [oferlmntr](https://github.com/oferlmntr) 
