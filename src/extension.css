@@ -264,4 +264,27 @@
 
 .chatgpt-drawing-toast.fade-out {
   opacity: 0;
+}
+
+/* Add styling for the canvas drag-over state */
+.chatgpt-drawing-canvas.drag-over {
+  border: 2px dashed #0f766e !important;
+  background-color: rgba(15, 118, 110, 0.1);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.2);
+}
+
+/* Add styling for the drawing hint */
+.chatgpt-drawing-hint {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
 } 

@@ -114,6 +114,7 @@ import './extension.css';
           <div class="chatgpt-drawing-panel-content">
             <div class="chatgpt-drawing-canvas-container">
               <canvas id="drawing-canvas" class="chatgpt-drawing-canvas"></canvas>
+              <div class="chatgpt-drawing-hint">Tip: You can also paste images (Ctrl+V)</div>
             </div>
           </div>
           <div class="chatgpt-drawing-panel-toolbar">
@@ -125,6 +126,10 @@ import './extension.css';
                 <button id="eraser-tool" class="chatgpt-toolbar-button" title="Eraser">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
                 </button>
+                <button id="upload-image" class="chatgpt-toolbar-button" title="Upload image">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                </button>
+                <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
               </div>
               
               <div class="chatgpt-color-picker">
@@ -339,6 +344,144 @@ import './extension.css';
               ctx.fillRect(0, 0, canvas.width, canvas.height);
             });
           }
+
+          // Upload image button and file handling
+          const uploadButton = document.getElementById('upload-image');
+          const fileInput = document.getElementById('image-upload-input') as HTMLInputElement;
+          
+          if (uploadButton && fileInput) {
+            uploadButton.addEventListener('click', () => {
+              fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', () => {
+              if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                
+                if (/^image\//.test(file.type)) {
+                  const reader = new FileReader();
+                  
+                  reader.onload = (e) => {
+                    if (e.target && e.target.result) {
+                      const img = new Image();
+                      img.onload = () => {
+                        // Clear canvas and draw the image
+                        drawImageOnCanvas(img);
+                      };
+                      img.src = e.target.result as string;
+                    }
+                  };
+                  
+                  reader.readAsDataURL(file);
+                } else {
+                  showToast('Please select an image file');
+                }
+              }
+            });
+          }
+          
+          // Handle paste from clipboard
+          document.addEventListener('paste', (e) => {
+            // Only capture paste events when the panel is visible
+            const panel = document.getElementById('chatgpt-drawing-panel');
+            if (!panel) return;
+            
+            if (e.clipboardData) {
+              const items = e.clipboardData.items;
+              
+              for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                  const blob = items[i].getAsFile();
+                  if (blob) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                      if (e.target && e.target.result) {
+                        const img = new Image();
+                        img.onload = () => {
+                          // Clear canvas and draw the image
+                          drawImageOnCanvas(img);
+                        };
+                        img.src = e.target.result as string;
+                      }
+                    };
+                    
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
+                  }
+                }
+              }
+            }
+          });
+          
+          // Helper function to draw image on canvas
+          const drawImageOnCanvas = (img: HTMLImageElement) => {
+            // Calculate dimensions to maintain aspect ratio
+            let width = img.width;
+            let height = img.height;
+            const maxWidth = canvas.width - 20; // Leave some margin
+            const maxHeight = canvas.height - 20;
+            
+            if (width > maxWidth) {
+              const ratio = maxWidth / width;
+              width = maxWidth;
+              height = height * ratio;
+            }
+            
+            if (height > maxHeight) {
+              const ratio = maxHeight / height;
+              height = maxHeight;
+              width = width * ratio;
+            }
+            
+            // Draw the image centered on canvas
+            const x = (canvas.width - width) / 2;
+            const y = (canvas.height - height) / 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, x, y, width, height);
+            
+            showToast('Image added to canvas');
+          };
+
+          // Add drag and drop support for images
+          canvas.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            canvas.classList.add('drag-over');
+          });
+          
+          canvas.addEventListener('dragleave', () => {
+            canvas.classList.remove('drag-over');
+          });
+          
+          canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            canvas.classList.remove('drag-over');
+            
+            if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+              const file = e.dataTransfer.files[0];
+              
+              if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                  if (e.target && e.target.result) {
+                    const img = new Image();
+                    img.onload = () => {
+                      drawImageOnCanvas(img);
+                    };
+                    img.src = e.target.result as string;
+                  }
+                };
+                
+                reader.readAsDataURL(file);
+              } else {
+                showToast('Please drop an image file');
+              }
+            }
+          });
 
           // Copy to clipboard
           const copyButton = document.getElementById('copy-canvas');
