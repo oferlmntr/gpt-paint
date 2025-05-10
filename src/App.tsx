@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import DrawingPanel from './components/DrawingPanel';
 import FloatingButton from './components/FloatingButton';
 
+// Define interface for extension message structure
+interface ExtensionMessage {
+  action: string;
+  [key: string]: unknown; // Allow additional properties
+}
+
 function App() {
   const [isDrawingPanelVisible, setIsDrawingPanelVisible] = useState(false);
 
@@ -13,7 +19,7 @@ function App() {
   useEffect(() => {
     // Check if we're in a browser extension environment
     if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-      const messageListener = (message: any) => {
+      const messageListener = (message: ExtensionMessage) => {
         if (message.action === 'OPEN_DRAWING_TOOL') {
           setIsDrawingPanelVisible(true);
         }

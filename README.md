@@ -2,7 +2,7 @@
   
   # GPT Power-Ups
   
-  🎨 Draw directly in ChatGPT conversations and toggle RTL for assistant messages with this browser extension 🖌️
+  🎨 Draw directly in ChatGPT conversations, toggle RTL for assistant messages, and sanitize text from hidden characters with this browser extension 🖌️
   
   ![GPT Power-Ups Demo](screenshots/gpt-power-ups.gif)
   
@@ -35,6 +35,13 @@ GPT Power-Ups Chrome Extension currently provides two main power-ups:
    - Adds a button next to the Share button on chatgpt.com
    - Allows you to toggle the direction (RTL/LTR) and alignment of the last assistant message
    - Useful for right-to-left language users or for better reading experience
+
+3. **Sanitize Button**
+   - Cleans up ChatGPT responses from hidden characters that can trigger AI detection tools
+   - Replaces fancy dashes (en dash, em dash) with standard hyphens
+   - Removes zero-width spaces and other invisible Unicode characters
+   - Provides visual feedback showing how many characters were sanitized
+   - Helps ensure text can be copied cleanly for use in other applications
 
 **Missing a power-up?** Send us a feature request through the Chrome Extensions Webstore suggestions page.
 

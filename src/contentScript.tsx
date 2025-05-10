@@ -39,7 +39,7 @@ import './extension.css';
       });
     };
 
-    // Inject the button
+    // Inject the floating button
     const injectFloatingButton = () => {
       console.log('[ChatGPT Drawing Tool] Injecting floating button...');
       const button = document.createElement('button');
@@ -49,8 +49,8 @@ import './extension.css';
       button.title = 'Open drawing tool';
       document.body.appendChild(button);
 
-      // Inject RTL button if possible
-      injectRTLButton();
+      // Inject all utility buttons
+      injectButtons();
 
       // Toggle panel when clicked
       button.addEventListener('click', () => {
@@ -98,33 +98,121 @@ import './extension.css';
       }
     };
 
-    // Helper to inject RTL button next to Share button
-    function injectRTLButton() {
-      console.log('[ChatGPT Drawing Tool] Injecting RTL button...');
+    // Helper to inject all buttons (Cleanup and RTL)
+    function injectButtons() {
+      console.log('[ChatGPT Drawing Tool] Injecting utility buttons...');
       const shareButton = document.querySelector('button[data-testid="share-chat-button"]');
       if (!shareButton) return;
-      if (document.getElementById('rtl-toggle-button')) return;
-      const rtlButton = document.createElement('button');
-      rtlButton.id = 'rtl-toggle-button';
-      rtlButton.className = shareButton.className;
-      rtlButton.setAttribute('aria-label', 'Toggle RTL');
-      rtlButton.innerHTML = '<div class="flex w-full items-center justify-center gap-2">RTL</div>';
-      rtlButton.style.marginRight = '8px';
-      if (shareButton.parentNode) {
-        shareButton.parentNode.insertBefore(rtlButton, shareButton);
+      
+      // First create both buttons (don't inject them yet)
+      
+      // Create Cleanup button
+      let cleanupButton = document.getElementById('cleanup-button') as HTMLButtonElement;
+      if (!cleanupButton) {
+        console.log('[ChatGPT Drawing Tool] Creating Cleanup button...');
+        cleanupButton = document.createElement('button');
+        cleanupButton.id = 'cleanup-button';
+        cleanupButton.className = shareButton.className;
+        cleanupButton.setAttribute('aria-label', 'Clean text formatting');
+        cleanupButton.innerHTML = '<div class="flex w-full items-center justify-center gap-2">Sanitize</div>';
+        cleanupButton.style.marginRight = '8px';
+        cleanupButton.title = 'Clean hidden unicode dashes and formatting';
+        
+        cleanupButton.addEventListener('click', () => {
+          const assistantMessages = Array.from(document.querySelectorAll('[data-message-author-role="assistant"]'));
+          if (assistantMessages.length === 0) {
+            console.log('[GPT Power-Ups] Cleanup Button: No assistant messages found');
+            showToast('No assistant messages found to clean');
+            return;
+          }
+          
+          const lastMessage = assistantMessages[assistantMessages.length - 1] as HTMLElement;
+          
+          // Get all text nodes inside the message
+          const walker = document.createTreeWalker(
+            lastMessage,
+            NodeFilter.SHOW_TEXT,
+            null
+          );
+          
+          let node;
+          let cleaned = false;
+          const replacementCount = { zeroWidth: 0, dashes: 0 };
+          
+          while ((node = walker.nextNode())) {
+            const originalText = node.nodeValue || '';
+            
+            // Count replacements
+            const zeroWidthCount = (originalText.match(/[\u200B-\u200F\u2060\uFEFF]/g) || []).length;
+            const dashesCount = (originalText.match(/[\u2013\u2014\u2015\u2212]/g) || []).length;
+            
+            // Replace zero-width spaces and other hidden characters, plus fancy dashes
+            const cleanedText = originalText
+              .replace(/[\u200B-\u200F\u2060\uFEFF]/g, ' ') // Replace zero-width spaces with regular spaces
+              .replace(/[\u2013\u2014\u2015\u2212]/g, ' - ');  // Replace en dash (–), em dash (—), etc. with hyphen (-)
+            
+            if (originalText !== cleanedText) {
+              node.nodeValue = cleanedText;
+              cleaned = true;
+              replacementCount.zeroWidth += zeroWidthCount;
+              replacementCount.dashes += dashesCount;
+            }
+          }
+          
+          console.log(`[GPT Power-Ups] Cleanup Button: ${cleaned ? 'Cleaned up' : 'No changes needed in'} the last message`);
+          
+          // Show a temporary visual feedback that cleanup was done
+          if (cleaned) {
+            const originalBg = lastMessage.style.backgroundColor;
+            lastMessage.style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
+            setTimeout(() => {
+              lastMessage.style.backgroundColor = originalBg;
+            }, 500);
+            
+            showToast(`Cleaned: ${replacementCount.zeroWidth} hidden chars, ${replacementCount.dashes} dashes`);
+          } else {
+            showToast('Text is already clean');
+          }
+        });
       }
-      rtlButton.addEventListener('click', () => {
-        const assistantMessages = Array.from(document.querySelectorAll('[data-message-author-role="assistant"]'));
-        if (assistantMessages.length === 0) {
-          console.log('[GPT Power-Ups] RTL Button: No assistant messages found');
-          return;
+      
+      // Create RTL button
+      let rtlButton = document.getElementById('rtl-toggle-button') as HTMLButtonElement;
+      if (!rtlButton) {
+        console.log('[ChatGPT Drawing Tool] Creating RTL button...');
+        rtlButton = document.createElement('button');
+        rtlButton.id = 'rtl-toggle-button';
+        rtlButton.className = shareButton.className;
+        rtlButton.setAttribute('aria-label', 'Toggle RTL');
+        rtlButton.innerHTML = '<div class="flex w-full items-center justify-center gap-2">RTL</div>';
+        rtlButton.style.marginRight = '8px';
+        
+        rtlButton.addEventListener('click', () => {
+          const assistantMessages = Array.from(document.querySelectorAll('[data-message-author-role="assistant"]'));
+          if (assistantMessages.length === 0) {
+            console.log('[GPT Power-Ups] RTL Button: No assistant messages found');
+            return;
+          }
+          const lastMessage = assistantMessages[assistantMessages.length - 1] as HTMLElement;
+          const currentDir = lastMessage.style.direction;
+          lastMessage.style.direction = currentDir === 'rtl' ? 'ltr' : 'rtl';
+          lastMessage.style.textAlign = currentDir === 'rtl' ? 'left' : 'right';
+          console.log(`[GPT Power-Ups] RTL Button: Toggled direction to ${lastMessage.style.direction}`);
+        });
+      }
+      
+      // Now inject the buttons in the correct order
+      if (shareButton.parentNode) {
+        // Inject the RTL button first (it will appear before the share button)
+        if (!document.body.contains(rtlButton)) {
+          shareButton.parentNode.insertBefore(rtlButton, shareButton);
         }
-        const lastMessage = assistantMessages[assistantMessages.length - 1] as HTMLElement;
-        const currentDir = lastMessage.style.direction;
-        lastMessage.style.direction = currentDir === 'rtl' ? 'ltr' : 'rtl';
-        lastMessage.style.textAlign = currentDir === 'rtl' ? 'left' : 'right';
-        console.log(`[GPT Power-Ups] RTL Button: Toggled direction to ${lastMessage.style.direction}`);
-      });
+        
+        // Then inject the Cleanup button (it will appear before the RTL button)
+        if (!document.body.contains(cleanupButton)) {
+          shareButton.parentNode.insertBefore(cleanupButton, rtlButton);
+        }
+      }
     }
 
     // Inject the drawing panel
@@ -382,7 +470,7 @@ import './extension.css';
             }
           });
           
-          canvas.addEventListener('mouseup', (e) => {
+          canvas.addEventListener('mouseup', () => {
             console.log(`[ChatGPT Drawing Tool] Mouse up, drawMode: ${drawMode}, isSelecting: ${isSelecting}, isMovingSelection: ${isMovingSelection}`);
             
             if (drawMode === 'selection') {
