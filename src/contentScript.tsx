@@ -49,8 +49,9 @@ import './extension.css';
       button.title = 'Open drawing tool';
       document.body.appendChild(button);
 
+      // Inject RTL button if possible
+      injectRTLButton();
 
-      
       // Toggle panel when clicked
       button.addEventListener('click', () => {
         console.log('[ChatGPT Drawing Tool] Button clicked');
@@ -96,6 +97,35 @@ import './extension.css';
         console.warn('[ChatGPT Drawing Tool] Chrome runtime not available, popup functionality disabled');
       }
     };
+
+    // Helper to inject RTL button next to Share button
+    function injectRTLButton() {
+      console.log('[ChatGPT Drawing Tool] Injecting RTL button...');
+      const shareButton = document.querySelector('button[data-testid="share-chat-button"]');
+      if (!shareButton) return;
+      if (document.getElementById('rtl-toggle-button')) return;
+      const rtlButton = document.createElement('button');
+      rtlButton.id = 'rtl-toggle-button';
+      rtlButton.className = shareButton.className;
+      rtlButton.setAttribute('aria-label', 'Toggle RTL');
+      rtlButton.innerHTML = '<div class="flex w-full items-center justify-center gap-2">RTL</div>';
+      rtlButton.style.marginRight = '8px';
+      if (shareButton.parentNode) {
+        shareButton.parentNode.insertBefore(rtlButton, shareButton);
+      }
+      rtlButton.addEventListener('click', () => {
+        const assistantMessages = Array.from(document.querySelectorAll('[data-message-author-role="assistant"]'));
+        if (assistantMessages.length === 0) {
+          console.log('[GPT Power-Ups] RTL Button: No assistant messages found');
+          return;
+        }
+        const lastMessage = assistantMessages[assistantMessages.length - 1] as HTMLElement;
+        const currentDir = lastMessage.style.direction;
+        lastMessage.style.direction = currentDir === 'rtl' ? 'ltr' : 'rtl';
+        lastMessage.style.textAlign = currentDir === 'rtl' ? 'left' : 'right';
+        console.log(`[GPT Power-Ups] RTL Button: Toggled direction to ${lastMessage.style.direction}`);
+      });
+    }
 
     // Inject the drawing panel
     const injectDrawingPanel = () => {
@@ -268,8 +298,7 @@ import './extension.css';
           let selectionEnd = { x: 0, y: 0 };
           let selectionRect = { x: 0, y: 0, width: 0, height: 0 };
           let selectionImageData: ImageData | null = null;
-          let selectionOffset = { x: 0, y: 0 };
-          let dragStart = { x: 0, y: 0 };
+          const selectionOffset = { x: 0, y: 0 };
           
           // Create a temporary canvas for selection operations
           const tempCanvas = document.createElement('canvas');
@@ -299,11 +328,6 @@ import './extension.css';
                   y >= selectionRect.y && y <= selectionRect.y + selectionRect.height) {
                 // Start moving the selection
                 isMovingSelection = true;
-                dragStart = { x, y };
-                selectionOffset = { 
-                  x: x - selectionRect.x, 
-                  y: y - selectionRect.y 
-                };
                 canvas.style.cursor = 'move';
                 console.log('[ChatGPT Drawing Tool] Moving existing selection');
               } else {

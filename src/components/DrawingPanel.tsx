@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Minimize2, ChevronUp, Move } from 'lucide-react';
+import { X, Minimize2, Move } from 'lucide-react';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
-import { useDrawingContext } from '../context/DrawingContext';
 import { useDraggable } from '../hooks/useDraggable';
 import { useResizable } from '../hooks/useResizable';
 
@@ -15,10 +14,9 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({ onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const resizeHandleRef = useRef<HTMLDivElement>(null);
-  const { canvasRef, clearCanvas } = useDrawingContext();
   
   const { position } = useDraggable(panelRef, headerRef);
-  const { size } = useResizable(panelRef, resizeHandleRef);
+  useResizable(panelRef, resizeHandleRef);
 
   useEffect(() => {
     // Initialize position in the center of the screen
@@ -58,7 +56,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({ onClose }) => {
         >
           <div className="flex items-center gap-2">
             <Move size={16} className="text-gray-500" />
-            <span className="text-sm font-medium">Drawing Tool</span>
+            <span className="text-sm font-medium">GPT Power-Ups</span>
           </div>
           <div className="flex items-center gap-1">
             <button

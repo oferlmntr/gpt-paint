@@ -1,6 +1,6 @@
 # Converting to a Chrome Extension
 
-This guide explains how to convert this drawing tool into a Chrome extension that can be used with ChatGPT.
+This guide explains how to convert this missing features tool into a Chrome extension that can be used with ChatGPT.
 
 ## Step 1: Build the application
 
@@ -19,9 +19,9 @@ Create a `manifest.json` file in the `dist` folder with the following content:
 ```json
 {
   "manifest_version": 3,
-  "name": "ChatGPT Drawing Tool",
+  "name": "GPT Missing Features",
   "version": "1.0.0",
-  "description": "A floating MS Paint-style drawing tool for ChatGPT",
+  "description": "A floating MS Paint-style missing features tool for ChatGPT",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

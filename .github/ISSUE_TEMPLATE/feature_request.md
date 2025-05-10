@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for GPT Paint
+about: Suggest an idea for GPT Power-Ups
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''

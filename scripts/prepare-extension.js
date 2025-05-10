@@ -1,13 +1,26 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Copy the manifest.json to the dist folder
+// --- Bump minor version in manifest.json ---
 const manifestSrc = path.join(__dirname, '../public/manifest.json');
 const manifestDest = path.join(__dirname, '../dist/manifest.json');
+
+let manifest = JSON.parse(fs.readFileSync(manifestSrc, 'utf-8'));
+if (manifest.version) {
+  const parts = manifest.version.split('.').map(Number);
+  if (parts.length === 3) {
+    parts[1] += 1; // bump minor
+    parts[2] = 0; // reset patch
+    manifest.version = parts.join('.');
+    fs.writeFileSync(manifestSrc, JSON.stringify(manifest, null, 2));
+    console.log(`🔄 Manifest version bumped to ${manifest.version}`);
+  }
+}
 
 // Copy the popup.html to the dist folder
 const popupSrc = path.join(__dirname, '../public/popup.html');
@@ -42,4 +55,14 @@ const iconDestDir = path.join(__dirname, '../dist/icons');
   } else {
     console.log(`❌ ${iconFile} not found in public/icons/`);
   }
-}); 
+});
+
+// --- Zip the dist folder ---
+try {
+  const distDir = path.join(__dirname, '../dist');
+  const zipPath = path.join(__dirname, '../dist/gpt-missing-features.zip');
+  execSync(`cd ${distDir} && zip -r gpt-missing-features.zip .`);
+  console.log('✅ dist folder zipped to gpt-missing-features.zip');
+} catch (err) {
+  console.warn('⚠️  Could not zip dist folder. Is the zip CLI installed?');
+} 

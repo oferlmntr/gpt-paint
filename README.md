@@ -1,14 +1,14 @@
 <div align="center">
   
-  # GPT Paint
+  # GPT Power-Ups
   
-  🎨 Draw directly in ChatGPT conversations with this browser extension 🖌️
+  🎨 Draw directly in ChatGPT conversations and toggle RTL for assistant messages with this browser extension 🖌️
   
-  ![GPT Paint Demo](screenshots/gpt-paint.gif)
+  ![GPT Power-Ups Demo](screenshots/gpt-missing-features.gif)
   
   [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
-  [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-paint.svg)](https://github.com/oferlmntr/gpt-paint/issues)
+  [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-missing-features.svg)](https://github.com/oferlmntr/gpt-missing-features/issues)
   
   [Installation](#installation) • 
   [Features](#features) • 
@@ -18,15 +18,25 @@
 
 ## Features
 
-- Simple drawing interface with brush and eraser tools
-- Color selection with multiple preset colors
-- Adjustable brush sizes
-- Image upload and clipboard paste support
-- Selection tool for moving parts of your drawing
-- Easy sharing directly to ChatGPT conversations
-- Downloadable PNG exports
-- Copy to clipboard functionality
-- Draggable panel interface
+GPT Power-Ups Chrome Extension currently provides two main power-ups:
+
+1. **GPT Paint**
+   - Simple drawing interface with brush and eraser tools
+   - Color selection with multiple preset colors
+   - Adjustable brush sizes
+   - Image upload and clipboard paste support
+   - Selection tool for moving parts of your drawing
+   - Easy sharing directly to ChatGPT conversations
+   - Downloadable PNG exports
+   - Copy to clipboard functionality
+   - Draggable panel interface
+
+2. **RTL Toggle Button**
+   - Adds a button next to the Share button on chatgpt.com
+   - Allows you to toggle the direction (RTL/LTR) and alignment of the last assistant message
+   - Useful for right-to-left language users or for better reading experience
+
+**Missing a power-up?** Send us a feature request through the Chrome Extensions Webstore suggestions page.
 
 ## Installation
 
@@ -37,8 +47,8 @@ _Coming soon_
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/oferlmntr/gpt-paint.git
-   cd gpt-paint
+   git clone https://github.com/oferlmntr/gpt-missing-features.git
+   cd gpt-missing-features
    ```
 
 2. Install dependencies:
@@ -87,8 +97,8 @@ _Coming soon_
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/oferlmntr/gpt-paint.git
-   cd gpt-paint
+   git clone https://github.com/oferlmntr/gpt-missing-features.git
+   cd gpt-missing-features
    ```
 
 2. Install dependencies
