@@ -60,9 +60,9 @@ const iconDestDir = path.join(__dirname, '../dist/icons');
 // --- Zip the dist folder ---
 try {
   const distDir = path.join(__dirname, '../dist');
-  const zipPath = path.join(__dirname, '../dist/gpt-missing-features.zip');
-  execSync(`cd ${distDir} && zip -r gpt-missing-features.zip .`);
-  console.log('✅ dist folder zipped to gpt-missing-features.zip');
+  const zipPath = path.join(__dirname, '../dist/gpt-power-ups.zip');
+  execSync(`cd ${distDir} && zip -r gpt-power-ups.zip .`);
+  console.log('✅ dist folder zipped to gpt-power-ups.zip');
 } catch (err) {
   console.warn('⚠️  Could not zip dist folder. Is the zip CLI installed?');
 } 

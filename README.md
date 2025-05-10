@@ -4,11 +4,11 @@
   
   🎨 Draw directly in ChatGPT conversations and toggle RTL for assistant messages with this browser extension 🖌️
   
-  ![GPT Power-Ups Demo](screenshots/gpt-missing-features.gif)
+  ![GPT Power-Ups Demo](screenshots/gpt-power-ups.gif)
   
   [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
-  [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-missing-features.svg)](https://github.com/oferlmntr/gpt-missing-features/issues)
+  [![Issues](https://img.shields.io/github/issues/oferlmntr/gpt-power-ups.svg)](https://github.com/oferlmntr/gpt-power-ups/issues)
   
   [Installation](#installation) • 
   [Features](#features) • 
@@ -47,8 +47,8 @@ _Coming soon_
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/oferlmntr/gpt-missing-features.git
-   cd gpt-missing-features
+   git clone https://github.com/oferlmntr/gpt-power-ups.git
+   cd gpt-power-ups
    ```
 
 2. Install dependencies:
@@ -97,8 +97,8 @@ _Coming soon_
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/oferlmntr/gpt-missing-features.git
-   cd gpt-missing-features
+   git clone https://github.com/oferlmntr/gpt-power-ups.git
+   cd gpt-power-ups
    ```
 
 2. Install dependencies

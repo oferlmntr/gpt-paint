@@ -29,8 +29,8 @@ This project and everyone participating in it is governed by our Code of Conduct
 2. Fork the repository on GitHub
 3. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/gpt-missing-features.git
-   cd gpt-missing-features
+   git clone https://github.com/YOUR-USERNAME/gpt-power-ups.git
+   cd gpt-power-ups
    ```
 4. Create a branch for your work:
    ```bash
@@ -45,7 +45,7 @@ This project and everyone participating in it is governed by our Code of Conduct
 This section guides you through submitting a bug report. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
 
 **Before submitting a bug report:**
-- Check the [issues](https://github.com/oferlmntr/gpt-missing-features/issues) to see if the problem has already been reported
+- Check the [issues](https://github.com/oferlmntr/gpt-power-ups/issues) to see if the problem has already been reported
 - If you're unable to find an open issue addressing the problem, open a new one
 
 **How to submit a good bug report:**
@@ -62,7 +62,7 @@ This section guides you through submitting a bug report. Following these guideli
 This section guides you through submitting an enhancement suggestion, including completely new features and minor improvements to existing functionality.
 
 **Before creating a feature suggestion:**
-- Check the [issues](https://github.com/oferlmntr/gpt-missing-features/issues) to see if the enhancement has already been suggested
+- Check the [issues](https://github.com/oferlmntr/gpt-power-ups/issues) to see if the enhancement has already been suggested
 - If you find a similar feature request, add a comment instead of opening a new one
 
 **How to submit a good feature suggestion:**
@@ -128,7 +128,7 @@ This section guides you through submitting an enhancement suggestion, including 
 Here's a brief overview of the project structure:
 
 ```
-gpt-missing-features/
+gpt-power-ups/
 ├── public/        # Static assets
 ├── src/           # Source files
 │   ├── contentScript.tsx  # Main extension functionality
