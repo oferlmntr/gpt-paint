@@ -1,0 +1,64 @@
+# GPT Power-Ups Project Guidelines
+
+## Project Context
+- Always check `.cursor/project-context.md` first to understand the project's architecture and features
+- This is a Chrome extension that enhances ChatGPT with drawing tools and RTL support
+- The extension is built with React, TypeScript, and Tailwind CSS
+
+## Technology Stack
+- Use React functional components with hooks (no class components)
+- Use TypeScript for type safety (avoid `any` types whenever possible)
+- Follow Tailwind CSS patterns for styling
+- Vite is used as the build tool
+
+## Code Style & Conventions
+- Use 2 spaces for indentation
+- Use descriptive variable and function names
+- Prefer const over let, and let over var
+- Use explicit return types for functions
+- Define interfaces for component props
+- Add appropriate TypeScript type definitions
+- Follow existing naming patterns in the codebase
+
+## Extension Development
+- Be aware of the Chrome extension manifest v3 limitations
+- Content scripts should be carefully injected only on ChatGPT pages
+- Extension functionality should be non-intrusive to ChatGPT's UI
+- Handle proper cleanup when the extension is disabled/unloaded
+
+## Component Structure
+- Components should be modular and focused on a single responsibility
+- Keep components small and composable
+- Extract reusable logic to custom hooks
+- Use React context for shared state
+- Component files should export a single default component
+
+## State Management
+- Use DrawingContext for drawing-related state
+- Use local component state for UI-specific state
+- Avoid prop drilling through component hierarchies
+- Follow the existing state management patterns
+
+## UI Considerations
+- Ensure UI elements are accessible
+- Support both light and dark modes
+- Make UI elements responsive to different screen sizes
+- Maintain consistent styling with the existing components
+
+## Testing & Debugging
+- Add comments for complex logic
+- Keep extension code lightweight for better performance
+- Test on different browsers (prioritize Chrome)
+- Ensure proper error handling and logging
+
+## Canvas Drawing Implementation
+- Consider browser compatibility for canvas operations
+- Handle window resizing properly
+- Optimize drawing operations for performance
+- Ensure proper cleanup to prevent memory leaks
+
+## File Organization
+- Place new components in the appropriate directory
+- Keep related files close together
+- Follow the existing file structure
+- Use index files for module exports when appropriate 

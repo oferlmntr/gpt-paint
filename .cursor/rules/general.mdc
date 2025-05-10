@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# General Project Guidelines
+
+## Documentation
+- Read `.cursor/project-context.md` for a complete overview of the project
+- Consult README.md for installation and development instructions
+- Review CONTRIBUTING.md before making contributions
+- Check the file structure in project-context.md
+
+## Project Structure
+- src/ - Source code
+- public/ - Static assets and extension manifest
+- scripts/ - Build and utility scripts
+- dist/ - Build output (generated)
+
+## Development Workflow
+- Use `npm run dev` for general development
+- Use `npm run dev:extension` for extension development
+- Build with `npm run build` or `npm run build:extension`
+
+## Code Quality
+- Follow TypeScript best practices
+- Maintain code consistency with existing patterns
+- Keep components modular and focused
+- Handle errors gracefully
+
+## Feature Development
+- Maintain backward compatibility when adding features
+- Ensure new features don't interfere with existing functionality
+- Test on multiple platforms and browsers
+
+## Code Style
+- Use consistent formatting throughout the codebase
+- Follow naming conventions established in the project
+- Keep code clean and readable
+- Document complex logic with comments
+
+## Work With Existing Tools
+- Leverage React's component-based architecture
+- Use the DrawingContext for state management
+- Utilize custom hooks for reusable logic
+- Follow Tailwind CSS for styling

@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TypeScript Guidelines
+
+## Type Safety
+- Avoid using `any` type whenever possible
+- Define interfaces for object structures
+- Use type unions for variables that can have multiple types
+- Use generics for reusable components and functions
+- Use function return types explicitly, especially for non-trivial functions
+
+## Types and Interfaces
+- Use interfaces for object shapes that might be extended or implemented
+- Use type aliases for unions, primitives, and tuple types
+- Name interfaces with PascalCase (e.g., `DrawingPanelProps`)
+- Define reusable types in appropriate files in the `types` directory
+- When appropriate, use TypeScript's utility types (e.g., `Partial<T>`, `Required<T>`, `Pick<T, K>`)
+
+## Best Practices
+- Enable strict type checking
+- Use the nullish coalescing operator (`??`) over OR (`||`) for default values when null/undefined checks are needed
+- Use optional chaining (`?.`) for potentially undefined objects
+- Use type narrowing with type guards instead of type assertions
+- Define enums for values with discrete options
+
+## Chrome Extension Types
+- Use proper chrome extension types from `@types/chrome`
+- Define custom types for message passing between components
+- Use the defined interfaces in the `chrome.d.ts` file for extension-specific functionality
+
+## Linting and Error Handling
+- Address all TypeScript errors before committing code
+- Follow existing patterns for handling type errors
+- Use type assertions (`as Type`) only when TypeScript can't infer the type correctly
+- Prefer explicit null checks over non-null assertions (`!`)

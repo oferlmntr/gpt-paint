@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Chrome Extension Guidelines
+
+## Manifest Configuration
+- Follow Manifest V3 standards for Chrome extensions
+- Define minimum permissions required for the extension to function
+- Specify content scripts that only run on ChatGPT domains
+- Include proper extension metadata (name, description, version, icons)
+- Handle web accessible resources appropriately
+
+## Content Script Development
+- Inject content scripts only on matched URLs (chat.openai.com or chatgpt.com)
+- Use feature detection before accessing browser APIs
+- Avoid conflicts with the host page by using unique CSS class names and IDs
+- Clean up injected elements when the extension is disabled or the page changes
+- Use shadow DOM when appropriate to isolate styles
+
+## Messaging and Communication
+- Use chrome.runtime.onMessage for communication between components
+- Implement proper error handling for message passing
+- Follow the defined message format for consistency
+- Handle disconnection and reconnection scenarios
+
+## Browser Compatibility
+- Test extension features across different browsers
+- Implement fallbacks for browser-specific APIs
+- Check for feature availability before using browser APIs
+- Handle differences in browser implementations
+
+## Performance and Security
+- Minimize DOM operations in content scripts
+- Avoid excessive memory usage
+- Implement proper cleanup functions to prevent memory leaks
+- Sanitize content before injecting into the DOM
+- Be mindful of ChatGPT's DOM structure changes
+
+## Debugging
+- Implement appropriate logging (console.log, console.error) for development
+- Remove or disable verbose logging in production builds
+- Use browser extension debugging tools (Chrome DevTools)
+- Handle and log errors properly for troubleshooting

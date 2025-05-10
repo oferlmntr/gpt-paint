@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# React Component Guidelines
+
+## Component Structure
+- Use functional components with hooks instead of class components
+- Define TypeScript interfaces for props at the top of the file
+- Export components as default exports
+- Keep components focused on a single responsibility
+- Extract complex logic to custom hooks when appropriate
+
+## Props and State
+- Use interface for props with descriptive names
+- Destructure props in function parameters
+- Use React's useState for component-local state
+- Use useRef for DOM references and values that shouldn't trigger re-renders
+- Use the DrawingContext for shared drawing state
+
+## Event Handlers
+- Prefix event handler functions with `handle` (e.g., `handleClick`, `handleChange`)
+- Define event handlers inside the component and not inline in JSX when they contain multiple lines of logic
+- Use proper TypeScript event types (e.g., `React.MouseEvent<HTMLButtonElement>`)
+
+## Styling Conventions
+- Use Tailwind CSS classes for styling
+- Follow existing component styling patterns
+- Keep styling logic separated from business logic when possible
+- Use semantic class names that describe purpose, not appearance
+
+## Performance Considerations
+- Memoize expensive calculations with useMemo
+- Memoize callback functions with useCallback when passing to child components
+- Add cleanup functions to useEffect hooks to prevent memory leaks
+- Avoid unnecessary re-renders

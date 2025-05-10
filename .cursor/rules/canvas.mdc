@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Canvas Drawing Guidelines
+
+## Canvas Setup
+- Set proper dimensions based on container size
+- Handle window resize events appropriately
+- Use a white background as the default canvas state
+- Implement proper cleanup for canvas resources
+- Set appropriate canvas rendering context (2d)
+
+## Drawing Functionality
+- Implement smooth line drawing with proper brush settings
+- Handle mouse events correctly (mousedown, mousemove, mouseup, mouseleave)
+- Support different drawing modes (brush, eraser)
+- Implement proper state management for drawing operations
+- Calculate mouse position relative to canvas boundaries
+
+## Performance Optimization
+- Avoid redrawing the entire canvas unnecessarily
+- Use appropriate data structures for storing drawing state
+- Optimize frequent canvas operations
+- Use requestAnimationFrame for animation when appropriate
+- Implement proper event throttling for mouse move events
+
+## Image Handling
+- Support pasting images from clipboard
+- Implement drag and drop for images
+- Support uploading images through file input
+- Scale and position images appropriately on the canvas
+- Preserve image quality during manipulation
+
+## Canvas Interaction
+- Implement appropriate cursor styles for different tools
+- Provide visual feedback during drawing operations
+- Handle touch events for mobile support
+- Implement proper error handling for canvas operations
+- Support canceling operations in progress
+
+## Export and Integration
+- Support exporting canvas as images (PNG, JPEG)
+- Implement functionality to copy canvas content to clipboard
+- Provide methods to insert canvas content into ChatGPT
+- Handle cross-origin issues when working with images
+- Support various image formats
