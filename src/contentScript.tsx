@@ -137,25 +137,57 @@ import './extension.css';
           
           let node;
           let cleaned = false;
-          const replacementCount = { zeroWidth: 0, dashes: 0 };
+          const replacementCount = { 
+            zeroWidth: 0, 
+            dashes: 0, 
+            quotes: 0, 
+            ellipsis: 0, 
+            spaces: 0,
+            accents: 0 
+          };
           
           while ((node = walker.nextNode())) {
             const originalText = node.nodeValue || '';
             
             // Count replacements
-            const zeroWidthCount = (originalText.match(/[\u200B-\u200F\u2060\uFEFF]/g) || []).length;
-            const dashesCount = (originalText.match(/[\u2013\u2014\u2015\u2212]/g) || []).length;
+            const zeroWidthCount = (originalText.match(/[\u200B-\u200D\uFEFF]/g) || []).length;
+            const dashesCount = (originalText.match(/[\u2013\u2014]/g) || []).length;
+            const quotesCount = (originalText.match(/[\u2018\u2019\u02BC\u201C\u201D]/g) || []).length;
+            const ellipsisCount = (originalText.match(/\u2026/g) || []).length;
+            const spacesCount = (originalText.match(/\u00A0/g) || []).length;
             
-            // Replace zero-width spaces and other hidden characters, plus fancy dashes
+            // Replace formatting characters using all sanitization rules
             const cleanedText = originalText
-              .replace(/[\u200B-\u200F\u2060\uFEFF]/g, ' ') // Replace zero-width spaces with regular spaces
-              .replace(/[\u2013\u2014\u2015\u2212]/g, ' - ');  // Replace en dash (–), em dash (—), etc. with hyphen (-)
+              // Replace em-dash and en-dash with a regular hyphen
+              .replace(/[\u2013\u2014]/g, '-')
+              // Replace fancy quotes with regular quotes
+              .replace(/[\u2018\u2019\u02BC]/g, "'")
+              .replace(/[\u201C\u201D]/g, '"')
+              // Replace ellipsis with three dots
+              .replace(/\u2026/g, '...')
+              // Replace non-breaking space with regular space
+              .replace(/\u00A0/g, ' ')
+              // Remove zero-width chars
+              .replace(/[\u200B-\u200D\uFEFF]/g, '');
             
-            if (originalText !== cleanedText) {
-              node.nodeValue = cleanedText;
+            // Optionally normalize accented characters
+            let finalText = cleanedText;
+            const normalizedText = cleanedText.normalize('NFKD').replace(/[\u0300-\u036F]/g, '');
+            const accentCount = cleanedText.length - normalizedText.length;
+            
+            if (accentCount > 0) {
+              finalText = normalizedText;
+              replacementCount.accents += accentCount;
+            }
+            
+            if (originalText !== finalText) {
+              node.nodeValue = finalText;
               cleaned = true;
               replacementCount.zeroWidth += zeroWidthCount;
               replacementCount.dashes += dashesCount;
+              replacementCount.quotes += quotesCount;
+              replacementCount.ellipsis += ellipsisCount;
+              replacementCount.spaces += spacesCount;
             }
           }
           
@@ -169,7 +201,11 @@ import './extension.css';
               lastMessage.style.backgroundColor = originalBg;
             }, 500);
             
-            showToast(`Cleaned: ${replacementCount.zeroWidth} hidden chars, ${replacementCount.dashes} dashes`);
+            const totalChanges = replacementCount.zeroWidth + replacementCount.dashes + 
+                               replacementCount.quotes + replacementCount.ellipsis + 
+                               replacementCount.spaces + replacementCount.accents;
+            
+            showToast(`Sanitized ${totalChanges} characters: ${replacementCount.zeroWidth} hidden, ${replacementCount.dashes} dashes, ${replacementCount.quotes} quotes, ${replacementCount.spaces} spaces, ${replacementCount.accents} accents`);
           } else {
             showToast('Text is already clean');
           }
