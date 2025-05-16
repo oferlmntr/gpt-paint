@@ -14,6 +14,61 @@ import './extension.css';
     appRoot.id = 'chatgpt-drawing-tool-root';
     document.body.appendChild(appRoot);
 
+    // Track if we're currently in the process of injecting buttons
+    let injectingButtons = false;
+    let debouncedInjectionTimer: number | null = null;
+
+    // Helper function to safely inject buttons with delay
+    const safelyInjectButtons = () => {
+      // Prevent multiple simultaneous injection attempts
+      if (injectingButtons) return;
+      injectingButtons = true;
+
+      // Wait briefly to ensure page elements are loaded
+      setTimeout(() => {
+        try {
+          // Only inject if buttons don't already exist
+          const cleanupButton = document.getElementById('cleanup-button');
+          const rtlButton = document.getElementById('rtl-toggle-button');
+
+          if (!cleanupButton || !rtlButton) {
+            console.log('[ChatGPT Drawing Tool] Attempting to inject buttons after user interaction');
+            injectButtons();
+          }
+        } catch (error) {
+          console.error('[ChatGPT Drawing Tool] Error injecting buttons:', error);
+        } finally {
+          injectingButtons = false;
+        }
+      }, 500); // 500ms delay should allow for elements to load
+    };
+
+    // Debounced version of safelyInjectButtons to prevent too many calls
+    const debouncedInjectButtons = () => {
+      // Clear any pending timer
+      if (debouncedInjectionTimer !== null) {
+        clearTimeout(debouncedInjectionTimer);
+      }
+      
+      // Set a new timer
+      debouncedInjectionTimer = window.setTimeout(() => {
+        safelyInjectButtons();
+        debouncedInjectionTimer = null;
+      }, 300); // 300ms debounce time
+    };
+
+    // Add event listeners for user interactions
+    document.addEventListener('click', () => {
+      debouncedInjectButtons();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      // Check for Ctrl+Enter key combination
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        safelyInjectButtons(); // Immediate injection for explicit user action
+      }
+    });
+
     // Load CSS manually (as a fallback)
     const loadCSS = (href: string) => {
       return new Promise<void>((resolve, reject) => {
@@ -90,6 +145,13 @@ import './extension.css';
               }
               injectDrawingPanel();
             }
+            return true; // Indicate we handled the message
+          } else if (message.action === 'INJECT_BUTTONS') {
+            // Force injection of buttons when requested explicitly
+            console.log('[ChatGPT Drawing Tool] Explicitly injecting buttons via message');
+            setTimeout(() => {
+              safelyInjectButtons();
+            }, 300);
             return true; // Indicate we handled the message
           }
         });
@@ -250,6 +312,70 @@ import './extension.css';
         }
       }
     }
+
+    // Set up MutationObserver to watch for navigation changes
+    const setupNavigationObserver = () => {
+      // Target the main content area that changes during navigation
+      const targetNode = document.querySelector('main') || document.body;
+      
+      // Keep track of significant changes to avoid excessive processing
+      let significantChangeCount = 0;
+      const MAX_CHANGES_BEFORE_THROTTLE = 10;
+      let lastInjectionTime = Date.now();
+      
+      const observer = new MutationObserver((mutations) => {
+        // Only proceed if it's been at least 2 seconds since the last injection attempt
+        const now = Date.now();
+        if (now - lastInjectionTime < 2000) {
+          return;
+        }
+        
+        // Look for significant DOM changes that might indicate navigation
+        const significant = mutations.some(mutation => 
+          (mutation.addedNodes.length > 0 && Array.from(mutation.addedNodes).some(node => 
+            node instanceof HTMLElement && 
+            (node.tagName === 'DIV' || node.tagName === 'BUTTON' || node.tagName === 'SECTION')
+          )) || 
+          (mutation.removedNodes.length > 0 && Array.from(mutation.removedNodes).some(node => 
+            node instanceof HTMLElement &&
+            (node.tagName === 'DIV' || node.tagName === 'BUTTON' || node.tagName === 'SECTION')
+          ))
+        );
+          
+        if (significant) {
+          // Throttle injections during rapid changes
+          significantChangeCount++;
+          if (significantChangeCount <= MAX_CHANGES_BEFORE_THROTTLE) {
+            // Add a delay to ensure the page has settled
+            setTimeout(() => {
+              debouncedInjectButtons();
+              lastInjectionTime = Date.now();
+            }, 1000);
+          } else if (significantChangeCount % 5 === 0) {
+            // If there are many mutations, only check occasionally
+            setTimeout(() => {
+              debouncedInjectButtons();
+              lastInjectionTime = Date.now();
+            }, 1000);
+          }
+          
+          // Reset counter after a period of inactivity
+          setTimeout(() => {
+            significantChangeCount = 0;
+          }, 5000);
+        }
+      });
+      
+      // Start observing with a configuration that balances performance and detection
+      observer.observe(targetNode, { 
+        childList: true, 
+        subtree: true,
+        attributes: false,
+        characterData: false
+      });
+      
+      console.log('[ChatGPT Drawing Tool] Navigation observer set up');
+    };
 
     // Inject the drawing panel
     const injectDrawingPanel = () => {
@@ -1213,6 +1339,7 @@ import './extension.css';
         loadCSS(chrome.runtime.getURL('assets/style.css'))
           .then(() => {
             injectFloatingButton();
+            setupNavigationObserver(); // Set up observer after initial button injection
           })
           .catch(err => {
             console.warn('[ChatGPT Drawing Tool] Could not load style.css, trying alternative...', err);
@@ -1220,22 +1347,26 @@ import './extension.css';
             loadCSS(chrome.runtime.getURL('assets/index.css'))
               .then(() => {
                 injectFloatingButton();
+                setupNavigationObserver(); // Set up observer after initial button injection
               })
               .catch(err => {
                 console.error('[ChatGPT Drawing Tool] Failed to load CSS:', err);
                 // Inject the button anyway as a fallback
                 injectFloatingButton();
+                setupNavigationObserver(); // Set up observer even if CSS loading fails
               });
           });
       } else {
         console.warn('[ChatGPT Drawing Tool] Chrome runtime not available, using default styling');
         injectFloatingButton();
+        setupNavigationObserver(); // Set up observer with default styling
       }
     } catch (error) {
       console.error('[ChatGPT Drawing Tool] Error during initialization:', error);
       // Try to inject button anyway
       try {
         injectFloatingButton();
+        setupNavigationObserver(); // Set up observer even after errors
       } catch (e) {
         console.error('[ChatGPT Drawing Tool] Fatal error, could not inject button:', e);
       }
