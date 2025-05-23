@@ -1,5 +1,7 @@
 <div align="center">
   
+  <img src="public/icons/icon128.png" alt="GPT Power-Ups Icon" width="80" height="80">
+  
   # GPT Power-Ups
   
   🎨 Draw directly in ChatGPT conversations, toggle RTL for assistant messages, and sanitize text from hidden characters with this browser extension 🖌️
@@ -128,6 +130,9 @@ _Coming soon_
 Contributions are welcome! Please check out our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
 
 Before submitting a pull request, please make sure your changes follow our coding standards and have been tested thoroughly.
+
+## Chrome store link
+[GPT Power-Ups Chrome Extension](https://chromewebstore.google.com/detail/gpt-power-ups-em-dash-fix/mpohfahnbfdelcdfnhlnafnhjjnammkg)
 
 ## License
 

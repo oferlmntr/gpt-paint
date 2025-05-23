@@ -5,39 +5,30 @@ import './extension.css';
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[GPT Power-Ups] Popup loaded');
   
-  const openButton = document.createElement('button');
-  openButton.textContent = 'Open GPT Paint';
-  openButton.className = 'popup-open-button';
-  openButton.style.cssText = 'width: 100%; background-color: #3b82f6; color: white; padding: 8px 16px; border-radius: 4px; transition: all 0.2s; cursor: pointer; margin-bottom: 16px; border: none; font-weight: 500;';
+  const feedbackButton = document.createElement('button');
+  feedbackButton.textContent = 'Share Ideas & Feedback';
+  feedbackButton.className = 'popup-feedback-button';
+  feedbackButton.style.cssText = 'width: 100%; background-color: #10b981; color: white; padding: 8px 16px; border-radius: 4px; transition: all 0.2s; cursor: pointer; margin-bottom: 16px; border: none; font-weight: 500;';
   
-  // When clicked, send message to content script
-  openButton.addEventListener('click', () => {
-    console.log('[GPT Power-Ups] Open button clicked');
+  // When clicked, open Chrome Web Store page
+  feedbackButton.addEventListener('click', () => {
+    console.log('[GPT Power-Ups] Feedback button clicked');
     
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      console.log('[GPT Power-Ups] Active tab:', tabs[0]?.url);
-      
-      if (tabs[0]?.id) {
-        console.log('[GPT Power-Ups] Sending message to tab:', tabs[0].id);
-        
-        try {
-          chrome.tabs.sendMessage(tabs[0].id, { action: 'OPEN_DRAWING_TOOL' }, (response) => {
-            if (chrome.runtime.lastError) {
-              console.error('[GPT Power-Ups] Error sending message:', chrome.runtime.lastError);
-            } else {
-              console.log('[GPT Power-Ups] Message sent successfully, response:', response);
-            }
-            window.close(); // Close the popup
-          });
-        } catch (error) {
-          console.error('[GPT Power-Ups] Error sending message:', error);
-          window.close();
+    const storeUrl = 'https://chromewebstore.google.com/detail/gpt-power-ups-em-dash-fix/mpohfahnbfdelcdfnhlnafnhjjnammkg';
+    
+    try {
+      chrome.tabs.create({ url: storeUrl }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('[GPT Power-Ups] Error opening store page:', chrome.runtime.lastError);
+        } else {
+          console.log('[GPT Power-Ups] Store page opened successfully');
         }
-      } else {
-        console.error('[GPT Power-Ups] No active tab ID found');
-        window.close();
-      }
-    });
+        window.close(); // Close the popup
+      });
+    } catch (error) {
+      console.error('[GPT Power-Ups] Error opening store page:', error);
+      window.close();
+    }
   });
   
   // Create container
@@ -53,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Add description
   const description = document.createElement('p');
-  description.textContent = 'Click the brush icon on the bottom right corner of ChatGPT to open the GPT Paint drawing tool.';
+  description.textContent = 'Use the brush, RTL, and sanitize icons on ChatGPT to enhance your experience with drawing tools, text cleaning, and right-to-left support.';
   description.className = 'popup-description';
   description.style.cssText = 'font-size: 0.75rem; color: #6b7280; margin-top: 16px;';
   
@@ -65,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Assemble the popup
   container.appendChild(heading);
-  container.appendChild(openButton);
+  container.appendChild(feedbackButton);
   container.appendChild(description);
   container.appendChild(version);
   
